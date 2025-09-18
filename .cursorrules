@@ -1,0 +1,32 @@
+# Cursor AI Rules for Golden Wings Reconoganza
+
+## Project Guidelines
+- This is a text file processing project
+- Focus on file discovery and text manipulation functionality
+- Keep code simple and readable
+- Follow standard conventions for the chosen programming language
+
+## Code Style
+- Use descriptive variable and function names
+- Add comments for complex logic
+- Keep functions small and focused
+- Handle errors gracefully
+
+## File Organization
+- Keep the repository clean and organized
+- Use meaningful file names
+- Group related functionality together
+
+## Development Priorities
+1. Text file discovery functionality
+2. File processing capabilities
+3. User-friendly interface
+4. Error handling and edge cases
+5. Documentation and examples
+
+## AI Assistant Behavior
+- Suggest practical, working solutions
+- Prioritize code clarity over clever tricks  
+- Ask for clarification when requirements are unclear
+- Provide examples and explanations
+- Consider cross-platform compatibility
