@@ -1,0 +1,9 @@
+{
+  "name": "golden-wings-content-hunter",
+  "version": "1.0.0",
+  "description": "Find all Golden Wings documentary related files",
+  "main": "content-hunter.js",
+  "scripts": {
+    "hunt": "node content-hunter.js"
+  }
+}
