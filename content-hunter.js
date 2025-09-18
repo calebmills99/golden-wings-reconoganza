@@ -44,12 +44,13 @@ const SEARCH_EXTENSIONS = [
 class DocumentaryContentHunter {
   constructor() {
     this.results = [];
+    const homeDir = process.env.USERPROFILE || process.env.HOME;
     this.searchPaths = [
-      (process.env.USERPROFILE || process.env.HOME) + '/Documents',
-      (process.env.USERPROFILE || process.env.HOME) + '/Desktop',
-      (process.env.USERPROFILE || process.env.HOME) + '/Downloads',
-      (process.env.USERPROFILE || process.env.HOME) + '/Videos',
-      (process.env.USERPROFILE || process.env.HOME) + '/Pictures',
+      path.join(homeDir, 'Documents'),
+      path.join(homeDir, 'Desktop'),
+      path.join(homeDir, 'Downloads'),
+      path.join(homeDir, 'Videos'),
+      path.join(homeDir, 'Pictures'),
       // Add your specific project folders here
       // '/path/to/your/golden-wings-folder',
     ];
@@ -99,12 +100,25 @@ class DocumentaryContentHunter {
       // For text files, also check content
       let contentMatches = [];
       if (['.md', '.txt', '.json', '.html', '.xml'].includes(ext)) {
-        const content = await fs.readFile(filePath, 'utf8');
-        const contentLower = content.toLowerCase();
-        
-        contentMatches = KEYWORDS.filter(keyword => 
-          contentLower.includes(keyword.toLowerCase())
-        );
+        try {
+          // Check file size first to avoid memory issues
+          const stats = await fs.stat(filePath);
+          const maxFileSize = 10 * 1024 * 1024; // 10MB limit
+          
+          if (stats.size > maxFileSize) {
+            console.log(`⚠️  Skipping large file ${filePath} (${(stats.size / 1024 / 1024).toFixed(1)}MB)`);
+          } else {
+            const content = await fs.readFile(filePath, 'utf8');
+            const contentLower = content.toLowerCase();
+            
+            contentMatches = KEYWORDS.filter(keyword => 
+              contentLower.includes(keyword.toLowerCase())
+            );
+          }
+        } catch (readError) {
+          // File might be locked or unreadable
+          console.log(`⚠️  Could not read content of ${filePath}: ${readError.message}`);
+        }
       }
 
       // Calculate relevance score
@@ -112,19 +126,25 @@ class DocumentaryContentHunter {
       const relevanceScore = totalMatches.length;
 
       if (relevanceScore > 0) {
-        this.results.push({
-          filePath,
-          fileName: path.basename(filePath),
-          extension: ext,
-          relevanceScore,
-          matchedKeywords: totalMatches,
-          filenameMatches,
-          contentMatches: contentMatches.slice(0, 10), // Limit for readability
-          lastModified: (await fs.stat(filePath)).mtime,
-          size: (await fs.stat(filePath)).size
-        });
+        try {
+          const stats = await fs.stat(filePath);
+          this.results.push({
+            filePath,
+            fileName: path.basename(filePath),
+            extension: ext,
+            relevanceScore,
+            matchedKeywords: totalMatches,
+            filenameMatches,
+            contentMatches: contentMatches.slice(0, 10), // Limit for readability
+            lastModified: stats.mtime,
+            size: stats.size
+          });
 
-        console.log(`📄 Found: ${filePath} (Score: ${relevanceScore})`);
+          console.log(`📄 Found: ${filePath} (Score: ${relevanceScore})`);
+        } catch (statError) {
+          // File might have been deleted between content check and stat call
+          console.log(`⚠️  File stats unavailable for ${filePath}: ${statError.message}`);
+        }
       }
     } catch (error) {
       // Silently skip files we can't read
