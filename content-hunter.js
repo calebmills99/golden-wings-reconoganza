@@ -45,6 +45,12 @@ class DocumentaryContentHunter {
   constructor() {
     this.results = [];
     const homeDir = process.env.USERPROFILE || process.env.HOME;
+    
+    // Validate home directory exists
+    if (!homeDir) {
+      throw new Error('No home directory found. USERPROFILE and HOME environment variables are not set.');
+    }
+    
     this.searchPaths = [
       path.join(homeDir, 'Documents'),
       path.join(homeDir, 'Desktop'),
@@ -74,6 +80,18 @@ class DocumentaryContentHunter {
         }
 
         if (entry.isDirectory()) {
+          // Check for symlinks to prevent infinite recursion
+          try {
+            const realPath = await fs.realpath(fullPath);
+            if (realPath !== fullPath) {
+              console.log(`🔗 Skipping symlink: ${fullPath} -> ${realPath}`);
+              continue;
+            }
+          } catch (symlinkError) {
+            // If we can't resolve the symlink, skip it
+            console.log(`🔗 Skipping unresolvable symlink: ${fullPath}`);
+            continue;
+          }
           await this.searchDirectory(fullPath, maxDepth, currentDepth + 1);
         } else if (entry.isFile()) {
           await this.analyzeFile(fullPath);
@@ -92,9 +110,11 @@ class DocumentaryContentHunter {
     if (!SEARCH_EXTENSIONS.includes(ext)) return;
     
     try {
-      // Quick filename relevance check
+      // Quick filename relevance check (case-insensitive)
       const filenameMatches = KEYWORDS.filter(keyword => 
-        fileName.includes(keyword.toLowerCase())
+        fileName.includes(keyword.toLowerCase()) || 
+        fileName.includes(keyword.toUpperCase()) ||
+        fileName.includes(keyword.charAt(0).toUpperCase() + keyword.slice(1).toLowerCase())
       );
 
       // For text files, also check content
@@ -152,31 +172,43 @@ class DocumentaryContentHunter {
   }
 
   async generateReport() {
-    // Sort by relevance score (highest first)
-    this.results.sort((a, b) => b.relevanceScore - a.relevanceScore);
+    try {
+      // Sort by relevance score (highest first)
+      this.results.sort((a, b) => b.relevanceScore - a.relevanceScore);
 
-    const report = {
-      searchDate: new Date().toISOString(),
-      totalFilesFound: this.results.length,
-      searchPaths: this.searchPaths,
-      keywordsUsed: KEYWORDS,
-      results: this.results
-    };
+      const report = {
+        searchDate: new Date().toISOString(),
+        totalFilesFound: this.results.length,
+        searchPaths: this.searchPaths,
+        keywordsUsed: KEYWORDS,
+        results: this.results
+      };
 
-    // Save detailed JSON report
-    await fs.writeFile(
-      'golden-wings-content-inventory.json', 
-      JSON.stringify(report, null, 2)
-    );
+      // Save detailed JSON report with proper error handling
+      await fs.writeFile(
+        'golden-wings-content-inventory.json', 
+        JSON.stringify(report, null, 2)
+      );
 
-    // Create readable summary
-    const summary = this.createSummaryReport();
-    await fs.writeFile('CONTENT-SUMMARY.md', summary);
+      // Create readable summary
+      const summary = this.createSummaryReport();
+      await fs.writeFile('CONTENT-SUMMARY.md', summary);
 
-    console.log(`\n🎬 SEARCH COMPLETE!`);
-    console.log(`📁 Found ${this.results.length} relevant files`);
-    console.log(`📊 Results saved to: golden-wings-content-inventory.json`);
-    console.log(`📝 Summary saved to: CONTENT-SUMMARY.md`);
+      console.log(`\n🎬 SEARCH COMPLETE!`);
+      console.log(`📁 Found ${this.results.length} relevant files`);
+      console.log(`📊 Results saved to: golden-wings-content-inventory.json`);
+      console.log(`📝 Summary saved to: CONTENT-SUMMARY.md`);
+    } catch (error) {
+      console.error(`❌ Error generating report: ${error.message}`);
+      throw error;
+    }
+  }
+
+  // Cleanup method for proper resource management
+  cleanup() {
+    // Clear results array to free memory
+    this.results = [];
+    console.log('🧹 Cleanup completed - memory freed');
   }
 
   createSummaryReport() {
@@ -243,15 +275,60 @@ ${this.getKeywordFrequency()}
     console.log(`🎯 Searching for ${KEYWORDS.length} keywords`);
     console.log(`📁 Scanning ${this.searchPaths.length} directories`);
     
+    // Validate search paths before starting
+    const validPaths = [];
     for (const searchPath of this.searchPaths) {
+      try {
+        await fs.access(searchPath);
+        validPaths.push(searchPath);
+      } catch (error) {
+        console.log(`⚠️  Skipping non-existent path: ${searchPath}`);
+      }
+    }
+    
+    if (validPaths.length === 0) {
+      console.log('❌ No valid search paths found. Please check your directory structure.');
+      return;
+    }
+    
+    // Process directories sequentially to avoid race conditions
+    for (const searchPath of validPaths) {
       console.log(`\n📂 Searching: ${searchPath}`);
-      await this.searchDirectory(searchPath);
+      try {
+        await this.searchDirectory(searchPath);
+      } catch (error) {
+        console.log(`❌ Error searching ${searchPath}: ${error.message}`);
+        // Continue with other directories even if one fails
+      }
     }
     
     await this.generateReport();
   }
 }
 
-// Run the hunt!
+// Run the hunt with proper cleanup
 const hunter = new DocumentaryContentHunter();
-hunter.hunt().catch(console.error);
+
+// Handle process termination gracefully
+process.on('SIGINT', () => {
+  console.log('\n🛑 Process interrupted. Cleaning up...');
+  hunter.cleanup();
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+  console.log('\n🛑 Process terminated. Cleaning up...');
+  hunter.cleanup();
+  process.exit(0);
+});
+
+// Run the hunt with cleanup
+hunter.hunt()
+  .then(() => {
+    hunter.cleanup();
+  })
+  .catch(error => {
+    console.error('❌ Hunt failed:', error.message);
+    hunter.cleanup();
+    process.exit(1);
+  });
