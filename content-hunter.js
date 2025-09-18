@@ -1,5 +1,9 @@
 const fs = require('fs').promises;
 const path = require('path');
+const os = require('os');
+const { exec } = require('child_process');
+const { promisify } = require('util');
+const execPromise = promisify(exec);
 
 // Your documentary keywords - the holy grail search terms
 const KEYWORDS = [
@@ -44,6 +48,10 @@ const SEARCH_EXTENSIONS = [
 class DocumentaryContentHunter {
   constructor() {
     this.results = [];
+    this.searchPaths = [];
+  }
+
+  async initializeSearchPaths() {
     const homeDir = process.env.USERPROFILE || process.env.HOME;
     
     // Validate home directory exists
@@ -51,18 +59,124 @@ class DocumentaryContentHunter {
       throw new Error('No home directory found. USERPROFILE and HOME environment variables are not set.');
     }
     
-    this.searchPaths = [
-      path.join(homeDir, 'Documents'),
-      path.join(homeDir, 'Desktop'),
-      path.join(homeDir, 'Downloads'),
-      path.join(homeDir, 'Videos'),
-      path.join(homeDir, 'Pictures'),
-      // Add your specific project folders here
-      // '/path/to/your/golden-wings-folder',
+    // Get all available drives/volumes based on OS
+    const platform = os.platform();
+    const drives = [];
+    
+    if (platform === 'win32') {
+      // Windows: Get all drive letters
+      try {
+        const { stdout } = await execPromise('wmic logicaldisk get size,freespace,caption');
+        const lines = stdout.trim().split('\n').slice(1); // Skip header
+        for (const line of lines) {
+          const match = line.match(/([A-Z]:)/);
+          if (match) {
+            drives.push(match[1] + '\\');
+          }
+        }
+      } catch (error) {
+        console.log('⚠️  Could not enumerate Windows drives, using defaults');
+        drives.push('C:\\', 'D:\\', 'E:\\');
+      }
+    } else if (platform === 'darwin') {
+      // macOS: Check common mount points
+      drives.push('/');
+      try {
+        const { stdout } = await execPromise('df -h | grep "/Volumes"');
+        const lines = stdout.trim().split('\n');
+        for (const line of lines) {
+          const match = line.match(/\/Volumes\/[^\s]+/);
+          if (match) {
+            drives.push(match[0]);
+          }
+        }
+      } catch (error) {
+        console.log('⚠️  Could not enumerate macOS volumes');
+      }
+    } else {
+      // Linux: Check mount points
+      drives.push('/');
+      try {
+        const { stdout } = await execPromise('df -h | grep -E "^/dev/" | awk "{print $6}"');
+        const mountPoints = stdout.trim().split('\n');
+        for (const mount of mountPoints) {
+          if (mount && mount !== '/' && !mount.startsWith('/snap') && !mount.startsWith('/boot')) {
+            drives.push(mount);
+          }
+        }
+        // Also check common external mount points
+        const externalMounts = ['/media', '/mnt', '/run/media'];
+        for (const mount of externalMounts) {
+          try {
+            const entries = await fs.readdir(mount);
+            for (const entry of entries) {
+              drives.push(path.join(mount, entry));
+            }
+          } catch (error) {
+            // Mount point doesn't exist or isn't readable
+          }
+        }
+      } catch (error) {
+        console.log('⚠️  Could not enumerate Linux mount points');
+      }
+    }
+    
+    console.log('🔍 Found volumes/drives:', drives);
+    
+    // Build search paths for all drives
+    this.searchPaths = [];
+    
+    // Common folders to search in each drive
+    const commonFolders = [
+      'Documents',
+      'Desktop', 
+      'Downloads',
+      'Videos',
+      'Pictures',
+      'Users',
+      'home',
+      'workspace',
+      'projects',
+      'data'
     ];
+    
+    // Add root of each drive
+    for (const drive of drives) {
+      this.searchPaths.push(drive);
+      
+      // Add common folders if they exist
+      if (platform === 'win32') {
+        // Windows-specific paths
+        for (const folder of commonFolders) {
+          this.searchPaths.push(path.join(drive, folder));
+          this.searchPaths.push(path.join(drive, 'Users', '*', folder));
+        }
+      } else {
+        // Unix-like paths
+        for (const folder of commonFolders) {
+          this.searchPaths.push(path.join(drive, folder));
+        }
+      }
+    }
+    
+    // Also add user home directory paths
+    if (homeDir) {
+      this.searchPaths.push(
+        path.join(homeDir, 'Documents'),
+        path.join(homeDir, 'Desktop'),
+        path.join(homeDir, 'Downloads'),
+        path.join(homeDir, 'Videos'),
+        path.join(homeDir, 'Pictures')
+      );
+    }
+    
+    // Remove duplicates
+    this.searchPaths = [...new Set(this.searchPaths)];
+    
+    console.log(`📁 Will search ${this.searchPaths.length} paths across ${drives.length} volumes`);
   }
 
-  async searchDirectory(dirPath, maxDepth = 5, currentDepth = 0) {
+  async searchDirectory(dirPath, maxDepth = 3, currentDepth = 0) {
     if (currentDepth >= maxDepth) return;
     
     try {
@@ -71,11 +185,22 @@ class DocumentaryContentHunter {
       for (const entry of entries) {
         const fullPath = path.join(dirPath, entry.name);
         
-        // Skip system/hidden folders
+        // Skip system/hidden folders and Windows system directories
         if (entry.name.startsWith('.') || 
+            entry.name.startsWith('$') ||
             entry.name.includes('node_modules') ||
             entry.name.includes('Library') ||
-            entry.name.includes('System')) {
+            entry.name.includes('System') ||
+            entry.name.toLowerCase() === 'windows' ||
+            entry.name.toLowerCase() === 'program files' ||
+            entry.name.toLowerCase() === 'program files (x86)' ||
+            entry.name.toLowerCase() === 'programdata' ||
+            entry.name.toLowerCase() === 'appdata' ||
+            entry.name.toLowerCase() === 'temp' ||
+            entry.name.toLowerCase() === 'tmp' ||
+            entry.name.toLowerCase() === 'cache' ||
+            entry.name.toLowerCase() === '.git' ||
+            entry.name.toLowerCase() === 'recycle.bin') {
           continue;
         }
 
@@ -271,20 +396,29 @@ ${this.getKeywordFrequency()}
   }
 
   async hunt() {
-    console.log('🔍 Starting Golden Wings content hunt...');
+    console.log('🔍 Starting Golden Wings content hunt across ALL VOLUMES...');
     console.log(`🎯 Searching for ${KEYWORDS.length} keywords`);
-    console.log(`📁 Scanning ${this.searchPaths.length} directories`);
+    
+    // Initialize search paths for all volumes
+    await this.initializeSearchPaths();
+    
+    console.log(`📁 Scanning ${this.searchPaths.length} potential directories`);
     
     // Validate search paths before starting
     const validPaths = [];
     for (const searchPath of this.searchPaths) {
       try {
         await fs.access(searchPath);
-        validPaths.push(searchPath);
+        const stats = await fs.stat(searchPath);
+        if (stats.isDirectory()) {
+          validPaths.push(searchPath);
+        }
       } catch (error) {
-        console.log(`⚠️  Skipping non-existent path: ${searchPath}`);
+        // Silently skip non-existent or inaccessible paths
       }
     }
+    
+    console.log(`✅ Found ${validPaths.length} valid paths to search`);
     
     if (validPaths.length === 0) {
       console.log('❌ No valid search paths found. Please check your directory structure.');
@@ -292,8 +426,10 @@ ${this.getKeywordFrequency()}
     }
     
     // Process directories sequentially to avoid race conditions
+    let pathCount = 0;
     for (const searchPath of validPaths) {
-      console.log(`\n📂 Searching: ${searchPath}`);
+      pathCount++;
+      console.log(`\n📂 [${pathCount}/${validPaths.length}] Searching: ${searchPath}`);
       try {
         await this.searchDirectory(searchPath);
       } catch (error) {
