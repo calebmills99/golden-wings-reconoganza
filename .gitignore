@@ -1,0 +1,12 @@
+# PowerShell scripts to ignore
+dumb.ps1
+
+# Contact sheets folder
+contact_sheets/
+
+# Common files to ignore
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+node_modules/
