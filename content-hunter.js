@@ -1,5 +1,6 @@
 const fs = require('fs').promises;
 const path = require('path');
+const pLimit = require('p-limit');
 
 // Your documentary keywords - the holy grail search terms
 const KEYWORDS = [
@@ -60,6 +61,10 @@ class DocumentaryContentHunter {
       // Add your specific project folders here
       // '/path/to/your/golden-wings-folder',
     ];
+    
+    // Throttling configuration - limit concurrent operations
+    this.directoryLimit = pLimit(5);  // Max 5 concurrent directory scans
+    this.fileLimit = pLimit(10);      // Max 10 concurrent file analyses
   }
 
   async searchDirectory(dirPath, maxDepth = 5, currentDepth = 0) {
@@ -67,6 +72,9 @@ class DocumentaryContentHunter {
     
     try {
       const entries = await fs.readdir(dirPath, { withFileTypes: true });
+      
+      // Create throttled tasks for processing entries
+      const tasks = [];
       
       for (const entry of entries) {
         const fullPath = path.join(dirPath, entry.name);
@@ -92,11 +100,16 @@ class DocumentaryContentHunter {
             console.log(`🔗 Skipping unresolvable symlink: ${fullPath}`);
             continue;
           }
-          await this.searchDirectory(fullPath, maxDepth, currentDepth + 1);
+          // Add throttled directory search task
+          tasks.push(this.directoryLimit(() => this.searchDirectory(fullPath, maxDepth, currentDepth + 1)));
         } else if (entry.isFile()) {
-          await this.analyzeFile(fullPath);
+          // Add throttled file analysis task
+          tasks.push(this.fileLimit(() => this.analyzeFile(fullPath)));
         }
       }
+      
+      // Wait for all throttled tasks to complete
+      await Promise.all(tasks);
     } catch (error) {
       console.log(`Skipping ${dirPath}: ${error.message}`);
     }
@@ -274,6 +287,7 @@ ${this.getKeywordFrequency()}
     console.log('🔍 Starting Golden Wings content hunt...');
     console.log(`🎯 Searching for ${KEYWORDS.length} keywords`);
     console.log(`📁 Scanning ${this.searchPaths.length} directories`);
+    console.log(`⚡ Throttling enabled: 5 concurrent directory scans, 10 concurrent file analyses`);
     
     // Validate search paths before starting
     const validPaths = [];
@@ -291,16 +305,20 @@ ${this.getKeywordFrequency()}
       return;
     }
     
-    // Process directories sequentially to avoid race conditions
-    for (const searchPath of validPaths) {
-      console.log(`\n📂 Searching: ${searchPath}`);
-      try {
-        await this.searchDirectory(searchPath);
-      } catch (error) {
-        console.log(`❌ Error searching ${searchPath}: ${error.message}`);
-        // Continue with other directories even if one fails
-      }
-    }
+    // Process directories with throttling
+    const searchTasks = validPaths.map(searchPath => 
+      this.directoryLimit(async () => {
+        console.log(`\n📂 Searching: ${searchPath}`);
+        try {
+          await this.searchDirectory(searchPath);
+        } catch (error) {
+          console.log(`❌ Error searching ${searchPath}: ${error.message}`);
+          // Continue with other directories even if one fails
+        }
+      })
+    );
+    
+    await Promise.all(searchTasks);
     
     await this.generateReport();
   }
