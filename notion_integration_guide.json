@@ -1,0 +1,347 @@
+{
+  "title": "Golden Wings Content Hunter - Notion AI Integration Guide",
+  "version": "1.0.0",
+  "description": "Comprehensive guide for integrating Golden Wings documentary content with Notion using AI automation",
+  "overview": {
+    "description": "The Golden Wings Content Hunter automatically finds, ranks, and imports your documentary files into a Notion database. It processes your content library and creates organized, searchable entries with relevance scoring.",
+    "prerequisites": [
+      "Content Hunter script (already configured)",
+      "TOP50.md file with ranked content",
+      "Notion account and workspace",
+      "Notion API integration token"
+    ]
+  },
+  "quick_start": {
+    "description": "One-command setup for Notion integration",
+    "command": "python notion_integration.py",
+    "working_directory": "D:\\golden-wings-reconoganza"
+  },
+  "setup_instructions": {
+    "step1": {
+      "title": "Get Your Notion API Token",
+      "steps": [
+        {
+          "action": "Visit Notion Developers",
+          "url": "https://developers.notion.com/"
+        },
+        {
+          "action": "Create New Integration",
+          "details": {
+            "name": "Golden Wings Content Hunter",
+            "description": "AI-powered documentary content management",
+            "type": "Internal integration"
+          }
+        },
+        {
+          "action": "Copy Integration Token",
+          "details": {
+            "format": "ntn_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "note": "Important: This token starts with ntn_ (not secret_)"
+          }
+        }
+      ]
+    },
+    "step2": {
+      "title": "Update Environment Configuration",
+      "options": [
+        {
+          "name": "Using .env file",
+          "code": "export NOTION_SECRET=\"ntn_YOUR_TOKEN_HERE\"\nexport NOTION_DATABASE_ID=\"27a61556bff380fd9a07c7d754aedeb8\""
+        },
+        {
+          "name": "Using PowerShell (recommended)",
+          "code": "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser\n.\\scripts\\set_env_vars.ps1"
+        }
+      ]
+    },
+    "step3": {
+      "title": "Create or Configure Notion Database",
+      "options": [
+        {
+          "name": "Create New Database",
+          "steps": [
+            "Open Notion in browser",
+            "Create new database (use Table view)",
+            "Set database title: Golden Wings Content Library",
+            "Configure columns as specified in database schema"
+          ]
+        },
+        {
+          "name": "Use Existing Database",
+          "steps": [
+            "Open existing database",
+            "Copy Database ID from URL",
+            "Ensure required columns exist"
+          ]
+        }
+      ]
+    },
+    "step4": {
+      "title": "Share Database with Integration",
+      "steps": [
+        "Open Golden Wings database",
+        "Click ... menu (top right)",
+        "Select Add connections",
+        "Search for: Golden Wings Content Hunter",
+        "Click Confirm to share access"
+      ]
+    },
+    "step5": {
+      "title": "Test Integration",
+      "command": "python notion_integration.py",
+      "expected_output": {
+        "status_code": 200,
+        "message": "Notion API connection successful",
+        "bot_name": "THE COLLECTIVE"
+      }
+    }
+  },
+  "usage_commands": {
+    "basic_workflow": {
+      "description": "Complete workflow (hunt + import)",
+      "command": "python notion_integration.py"
+    },
+    "npm_scripts": {
+      "hunt": "npm run hunt",
+      "notion": "npm run notion",
+      "workflow": "python workflow.py"
+    },
+    "individual_steps": [
+      {
+        "step": 1,
+        "description": "Hunt for content (creates TOP50.md)",
+        "command": "npm run hunt"
+      },
+      {
+        "step": 2,
+        "description": "Import to Notion",
+        "command": "npm run notion"
+      },
+      {
+        "step": 3,
+        "description": "Full workflow automation",
+        "command": "python workflow.py"
+      }
+    ]
+  },
+  "database_structure": {
+    "description": "Required database schema for Golden Wings content",
+    "columns": [
+      {
+        "name": "File Name",
+        "type": "Title",
+        "description": "Name of the content file"
+      },
+      {
+        "name": "Rank",
+        "type": "Number",
+        "description": "Position in relevance ranking (1-50)"
+      },
+      {
+        "name": "Relevance Score",
+        "type": "Number",
+        "description": "AI-calculated relevance score"
+      },
+      {
+        "name": "File Path",
+        "type": "Text",
+        "description": "Full system path to file"
+      },
+      {
+        "name": "Volume",
+        "type": "Text",
+        "description": "Drive/storage location"
+      },
+      {
+        "name": "File Size",
+        "type": "Text",
+        "description": "File size in KB/MB"
+      },
+      {
+        "name": "Last Modified",
+        "type": "Text",
+        "description": "When file was last updated"
+      },
+      {
+        "name": "Extension",
+        "type": "Text",
+        "description": "File type (.txt, .md, .mp4, etc.)"
+      },
+      {
+        "name": "Keywords",
+        "type": "Multi-select",
+        "description": "Relevant tags for filtering"
+      }
+    ]
+  },
+  "advanced_features": {
+    "filtering_views": {
+      "by_relevance": {
+        "name": "By Relevance",
+        "filter": "Relevance Score > 15",
+        "sort": "Last Modified (descending)",
+        "group": "File Type"
+      },
+      "by_file_type": {
+        "name": "By File Type",
+        "sort": "File Size (descending)",
+        "group": "Extension"
+      },
+      "by_volume": {
+        "name": "By Volume",
+        "filter": "Volume = Archive Drive",
+        "sort": "File Size (descending)"
+      },
+      "research_view": {
+        "name": "Research View",
+        "filter": "Keywords contains interview OR transcript",
+        "sort": "Relevance Score (descending)"
+      }
+    },
+    "visual_indicators": [
+      "Score Bars: Visual representation (████████)",
+      "Color Coding: High scores = green, medium = yellow",
+      "Icons: File type icons for easy recognition"
+    ]
+  },
+  "troubleshooting": {
+    "common_issues": [
+      {
+        "error": "API token is invalid (401)",
+        "solution": "Verify token format",
+        "debug_command": "python -c \"import os; token=os.getenv('NOTION_SECRET'); print('Format:', token[:10])\"",
+        "expected_format": "ntn_xxxxxxxx"
+      },
+      {
+        "error": "Database not found (404)",
+        "solution": "Check database sharing",
+        "steps": [
+          "Open database in Notion",
+          "Click ... → Add connections",
+          "Find integration and confirm"
+        ]
+      },
+      {
+        "error": "Database access failed",
+        "solution": "Verify database permissions",
+        "requirements": [
+          "Integration has Edit permissions",
+          "Database is in shared workspace"
+        ]
+      }
+    ],
+    "debug_commands": [
+      {
+        "name": "Test API connection",
+        "command": "python -c \"import requests, os; token = os.getenv('NOTION_SECRET'); headers = {'Authorization': f'Bearer {token}', 'Content-Type': 'application/json'}; response = requests.get('https://api.notion.com/v1/users', headers=headers); print('Status:', response.status_code); print('Response:', response.text[:200])\"",
+        "description": "Test basic API connectivity"
+      },
+      {
+        "name": "Check token format",
+        "command": "python -c \"import os; token=os.getenv('NOTION_SECRET'); print('Format:', token[:10]); print('Length:', len(token))\"",
+        "description": "Verify token format and length"
+      }
+    ]
+  },
+  "automation": {
+    "scheduled_updates": {
+      "description": "Set up automatic updates using Windows Task Scheduler",
+      "setup": [
+        "Create Task: Golden Wings Content Update",
+        "Trigger: Daily at 2 AM",
+        "Action: Run python D:\\golden-wings-reconoganza\\notion_integration.py"
+      ]
+    },
+    "powershell_script": {
+      "description": "PowerShell automation script",
+      "code": "cd \"D:\\golden-wings-reconoganza\"\npython notion_integration.py"
+    },
+    "batch_processing": {
+      "description": "Process multiple workspaces",
+      "examples": [
+        "python workflow.py --workspace \"D:\\Film Projects\\Golden Wings\"",
+        "python workflow.py --workspace \"F:\\Archive\\Documentary\""
+      ]
+    }
+  },
+  "analytics_insights": {
+    "content_analysis": [
+      "Content Distribution: Files by type and location",
+      "Relevance Patterns: High-scoring content themes",
+      "Storage Optimization: File sizes and locations",
+      "Update Frequency: Modification patterns"
+    ],
+    "ai_powered_features": [
+      "Smart Ranking: Relevance-based scoring",
+      "Auto-tagging: Keyword extraction",
+      "Duplicate Detection: Identifies redundant files",
+      "Content Relationships: Linked file connections"
+    ]
+  },
+  "best_practices": {
+    "database_management": [
+      "Regular Backups: Export database periodically",
+      "Archive Old Entries: Move outdated content",
+      "Custom Properties: Add project-specific fields",
+      "Template Pages: Create entry templates"
+    ],
+    "content_strategy": [
+      "Priority Lists: Focus on high-relevance content",
+      "Project Planning: Use for production scheduling",
+      "Team Collaboration: Share database with collaborators",
+      "Progress Tracking: Monitor content discovery"
+    ]
+  },
+  "security": {
+    "notes": [
+      "Token Security: Never share your integration token",
+      "Database Privacy: Set appropriate sharing permissions",
+      "Access Control: Limit who can edit the database",
+      "Regular Reviews: Audit database access periodically"
+    ]
+  },
+  "support": {
+    "getting_help": [
+      "Check this guide for common solutions",
+      "Test API connection before database operations",
+      "Verify permissions for database access",
+      "Review logs for detailed error information"
+    ],
+    "common_questions": [
+      {
+        "question": "Why can't I see my database?",
+        "answer": "Check sharing permissions and database URL"
+      },
+      {
+        "question": "How do I update content?",
+        "answer": "Run the integration script again"
+      },
+      {
+        "question": "Can I customize the database?",
+        "answer": "Yes, add custom properties as needed"
+      }
+    ]
+  },
+  "success_checklist": [
+    "API token configured (ntn_ format)",
+    "Database created/shared with integration",
+    "Test connection successful (status 200)",
+    "First 50 entries imported",
+    "Database customized for workflow",
+    "Team members invited (if applicable)"
+  ],
+  "metadata": {
+    "created_by": "Golden Wings Content Hunter AI",
+    "last_updated": "2025-01-09",
+    "version": "1.0.0",
+    "tags": [
+      "notion",
+      "integration",
+      "ai",
+      "automation",
+      "content-management",
+      "golden-wings",
+      "documentary"
+    ]
+  }
+}

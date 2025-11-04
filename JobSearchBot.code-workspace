@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../transcripts"
+		},
+		{
+			"path": "F:/dev/quivr/quivr_parsed_data"
+		},
+		{
+			"path": ".."
+		},
+		{
+			"path": "F:/dev/quivr"
+		}
+	],
+	"settings": {
+		"powershell.cwd": "golden-wings-reconoganza",
+		"git.ignoreLimitWarning": true
+	}
+}

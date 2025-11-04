@@ -1,0 +1,12 @@
+# Golden Wings Content Hunter - FIXED .env file
+# =================================================
+# Remove duplicate NOTION_SECRET lines and use only this format:
+
+export NOTION_SECRET="secret_YOUR_NEW_TOKEN_HERE"
+export NOTION_DATABASE_ID="27a61556bff380fd9a07c7d754aedeb8"
+
+# =================================================
+# Instructions:
+# 1. Replace YOUR_NEW_TOKEN_HERE with your actual token from https://developers.notion.com/
+# 2. Make sure there's only ONE NOTION_SECRET line
+# 3. Save and run: npm run notion

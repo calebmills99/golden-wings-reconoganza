@@ -1,0 +1,16 @@
+# Notion Integration - Environment Variables Template (.env format)
+# =================================================================
+# Copy this into a new file named .env (kept out of git by .gitignore)
+# Do NOT include quotes. Do NOT prefix with "export". Fill in your real values.
+
+NOTION_SECRET=YOUR_NOTION_INTERNAL_INTEGRATION_TOKEN
+# Either set the database ID directly OR set a name to search for
+NOTION_DATABASE_ID=your_database_id_here
+# NOTION_DATABASE_NAME=Your Database Name
+
+# =================================================================
+# Instructions:
+# 1) Create an Internal Integration at https://developers.notion.com/
+# 2) Copy the token and paste it as NOTION_SECRET above
+# 3) Share your Notion database with the integration
+# 4) Run the workflow: npm run workflow

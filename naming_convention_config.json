@@ -1,0 +1,223 @@
+{
+  "NamingRules": {
+    "Interview_Transcripts": {
+      "Pattern": "Transcript_{Person}_{Topic}_{Context}{ext}",
+      "Rules": [
+        {
+          "Condition": { "FileName": "(?i)golden.*wings.*transcript" },
+          "Mapping": {
+            "Person": "Multiple",
+            "Topic": "Golden_Wings_Story",
+            "Context": "Main"
+          }
+        },
+        {
+          "Condition": { "FileName": "(?i)mister.*american.*airlines" },
+          "Mapping": {
+            "Person": "Jock_Bethune",
+            "Topic": "American_Airlines_Career",
+            "Context": "Interview"
+          }
+        },
+        {
+          "Condition": { "Keywords": ["caleb", "voice"] },
+          "Mapping": {
+            "Person": "Caleb_Stewart",
+            "Topic": "Director_Notes",
+            "Context": "Voice"
+          }
+        }
+      ],
+      "DefaultMapping": {
+        "Person": "Unknown",
+        "Topic": "Interview",
+        "Context": "Transcript"
+      }
+    },
+    "Chat_Transcripts": {
+      "Pattern": "Transcript_Chat_{Topic}_{Context}{ext}",
+      "Rules": [
+        {
+          "Condition": { "FileName": "(?i)chatgpt" },
+          "Mapping": {
+            "Topic": "ChatGPT",
+            "Context": "Export"
+          }
+        },
+        {
+          "Condition": { "FullPath": "(?i)slack|discord" },
+          "Mapping": {
+            "Topic": "Team_Chat",
+            "Context": "Archive"
+          }
+        }
+      ],
+      "DefaultMapping": {
+        "Topic": "Conversation",
+        "Context": "Transcript"
+      }
+    },
+    "Production_Documents": {
+      "Pattern": "GW_Document_{Type}_{Description}{ext}",
+      "Rules": [
+        {
+          "Condition": { "FileName": "(?i).*history.*" },
+          "Mapping": {
+            "Type": "Historical",
+            "Description": "Background_Research"
+          }
+        },
+        {
+          "Condition": { "FileName": "(?i)press.*release" },
+          "Mapping": {
+            "Type": "Marketing",
+            "Description": "Press_Release"
+          }
+        },
+        {
+          "Condition": { "FileName": "(?i)project.*description" },
+          "Mapping": {
+            "Type": "Planning",
+            "Description": "Project_Overview"
+          }
+        }
+      ],
+      "DefaultMapping": {
+        "Type": "General",
+        "Description": "Document"
+      }
+    },
+    "Strategy_Documents": {
+      "Pattern": "GW_Strategy_{Topic}_{Version}{ext}",
+      "Rules": [
+        {
+          "Condition": { "FileName": "(?i)fever.*enhanced" },
+          "Mapping": {
+            "Topic": "Festival_Strategy",
+            "Version": "Enhanced"
+          }
+        },
+        {
+          "Condition": { "FileName": "(?i)fever.*ultimate" },
+          "Mapping": {
+            "Topic": "Festival_Strategy",
+            "Version": "Ultimate"
+          }
+        },
+        {
+          "Condition": { "FileName": "(?i)fever.*la.*strategy" },
+          "Mapping": {
+            "Topic": "LA_Festival_Strategy",
+            "Version": "Summary"
+          }
+        }
+      ],
+      "DefaultMapping": {
+        "Topic": "General",
+        "Version": "v1"
+      }
+    },
+    "Data_Reports": {
+      "Pattern": "GW_Report_{Type}_{Date}{ext}",
+      "Rules": [
+        {
+          "Condition": { "FileName": "(?i)duplicate" },
+          "Mapping": { "Type": "Duplicate_Analysis" }
+        },
+        {
+          "Condition": { "FileName": "(?i)stats" },
+          "Mapping": { "Type": "Statistics" }
+        },
+        {
+          "Condition": { "FileName": "(?i)cleanup" },
+          "Mapping": { "Type": "Cleanup_Log" }
+        }
+      ],
+      "DefaultMapping": { "Type": "Analysis" }
+    },
+    "Contact_Lists": {
+      "Pattern": "GW_Contacts_{Source}_{Date}{ext}",
+      "Rules": [
+        {
+          "Condition": { "FileName": "(?i)filmfreeway" },
+          "Mapping": { "Source": "FilmFreeway" }
+        },
+        {
+          "Condition": { "FileName": "(?i)squarespace" },
+          "Mapping": { "Source": "Squarespace" }
+        },
+        {
+          "Condition": { "FileName": "(?i)caleb" },
+          "Mapping": { "Source": "Caleb_Personal" }
+        }
+      ],
+      "DefaultMapping": { "Source": "General" }
+    },
+    "Web_Content": {
+      "Pattern": "GW_Web_{Platform}_{Content_Type}{ext}",
+      "Rules": [
+        {
+          "Condition": { "FileName": "(?i)facebook|fb_" },
+          "Mapping": {
+            "Platform": "Facebook",
+            "Content_Type": "Export"
+          }
+        },
+        {
+          "Condition": { "FileName": "(?i)profile.*update" },
+          "Mapping": {
+            "Platform": "Facebook",
+            "Content_Type": "Profile_History"
+          }
+        },
+        {
+          "Condition": { "FileName": "(?i)login" },
+          "Mapping": {
+            "Platform": "Web",
+            "Content_Type": "Login_Page"
+          }
+        },
+        {
+          "Condition": { "FileName": "(?i)veterans" },
+          "Mapping": {
+            "Platform": "Veterans_Site",
+            "Content_Type": "Search_Results"
+          }
+        }
+      ],
+      "DefaultMapping": {
+        "Platform": "Web",
+        "Content_Type": "Page"
+      }
+    },
+    "System_Files": {
+      "Pattern": "GW_System_{Function}_{Date}{ext}",
+      "Rules": [
+        {
+          "Condition": { "FileName": "(?i)folder.*structure" },
+          "Mapping": { "Function": "Directory_Structure" }
+        },
+        {
+          "Condition": { "FileName": "(?i)changes" },
+          "Mapping": { "Function": "Change_Log" }
+        },
+        {
+          "Condition": { "FileName": "(?i)files\\.txt" },
+          "Mapping": { "Function": "File_List" }
+        }
+      ],
+      "DefaultMapping": { "Function": "System" }
+    },
+    "Unknown": {
+      "Pattern": "GW_Unknown_{Rank}_{Date}{ext}",
+      "Rules": [],
+      "DefaultMapping": {}
+    }
+  },
+  "GlobalSettings": {
+    "HandleDuplicates": "AddVersion",
+    "DateFormat": "yyyy-MM-dd",
+    "PreservePaths": true,
+    "BackupOriginals": false
+  }
+}

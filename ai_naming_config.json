@@ -1,0 +1,74 @@
+{
+  "max_file_size": 1048576,
+  "content_sample_size": 2000,
+  "naming_patterns": {
+    "interview": {
+      "keywords": [
+        "interview", "question", "answer", "q:", "a:", "interviewee", "interviewer",
+        "tell me about", "can you describe", "what was it like", "how did you",
+        "speaking with", "conversation with", "discussion with"
+      ],
+      "pattern": "Interview_{Person}_{Topic}_{Date}",
+      "min_confidence": 0.7
+    },
+    "chapter": {
+      "keywords": [
+        "chapter", "episode", "part", "section", "story", "narrative",
+        "chapter one", "chapter two", "chapter three", "chapter four", "chapter five", "chapter six",
+        "episode 1", "episode 2", "episode 3", "episode 4", "episode 5", "episode 6",
+        "part 1", "part 2", "part 3", "part 4", "part 5", "part 6"
+      ],
+      "pattern": "Chapter_{Number}_{Title}_{Date}",
+      "min_confidence": 0.8
+    },
+    "transcript": {
+      "keywords": [
+        "transcript", "conversation", "dialogue", "speaking", "said", "told",
+        "he said", "she said", "they said", "according to", "mentioned",
+        "discussed", "talked about", "spoke about"
+      ],
+      "pattern": "Transcript_{Type}_{Person}_{Date}",
+      "min_confidence": 0.7
+    },
+    "production": {
+      "keywords": [
+        "production", "edit", "cut", "scene", "shot", "footage", "audio", "video",
+        "after effects", "premiere", "final cut", "editing", "post production",
+        "sound design", "music", "voice over", "narration"
+      ],
+      "pattern": "Production_{Type}_{Description}_{Date}",
+      "min_confidence": 0.6
+    },
+    "research": {
+      "keywords": [
+        "research", "study", "analysis", "findings", "data", "report",
+        "investigation", "examination", "review", "assessment", "evaluation"
+      ],
+      "pattern": "Research_{Topic}_{Type}_{Date}",
+      "min_confidence": 0.7
+    },
+    "technical": {
+      "keywords": [
+        "technical", "specification", "manual", "guide", "instructions",
+        "configuration", "setup", "installation", "troubleshooting"
+      ],
+      "pattern": "Technical_{Type}_{Description}_{Date}",
+      "min_confidence": 0.7
+    }
+  },
+  "person_names": [
+    "Caleb", "Stewart", "Jay", "Ricks", "Jock", "Bethune", "Robyn", 
+    "Stewart_Family", "Golden_Wings", "Boeing", "747", "Caleb_Stewart",
+    "Jay_Ricks", "Jock_Bethune", "Robyn_Stewart"
+  ],
+  "topics": [
+    "aviation", "aircraft", "boeing", "747", "airline", "pilot", "flight",
+    "documentary", "film", "production", "interview", "story", "history",
+    "golden_wings", "revolution", "legacy", "sound", "audio", "video",
+    "editing", "post_production", "narration", "voice_over"
+  ],
+  "golden_wings_keywords": [
+    "golden wings", "boeing 747", "aviation history", "aircraft revolution",
+    "pilot story", "flight experience", "airline industry", "documentary"
+  ]
+}

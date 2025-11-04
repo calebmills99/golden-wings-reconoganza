@@ -1,0 +1,111 @@
+{
+  "_description": "Windows Path Shortener Configuration File",
+  "_version": "1.0",
+  "_lastModified": "2024-01-01T00:00:00Z",
+  
+  "MaxPathLength": 200,
+  "_MaxPathLength_help": "Maximum allowed path length before creating short links. Windows limit is typically 260 characters.",
+  
+  "ShortLinkRoot": "C:\\ShortLinks",
+  "_ShortLinkRoot_help": "Root directory where short links will be created. Must be accessible and have sufficient permissions.",
+  
+  "DatabasePath": ".\\PathShortener.db",
+  "_DatabasePath_help": "Path to SQLite database for tracking operations. Relative paths are relative to script location.",
+  
+  "LinkType": "Auto",
+  "_LinkType_help": "Preferred link type: Auto, Junction, SymbolicLink, HardLink. Auto selects optimal type based on content.",
+  
+  "LogLevel": "Info",
+  "_LogLevel_help": "Logging level: Debug, Info, Warning, Error. Debug provides most verbose output.",
+  
+  "HashLength": 8,
+  "_HashLength_help": "Length of hash suffix used in short names. Longer hashes reduce collisions but create longer names.",
+  
+  "PrefixLength": 16,
+  "_PrefixLength_help": "Maximum length of original name prefix used in short names. Helps with human readability.",
+  
+  "ExcludePatterns": [
+    "*.tmp",
+    "*.temp", 
+    "*\\$Recycle.Bin\\*",
+    "*\\System Volume Information\\*",
+    "*\\.git\\*",
+    "*\\node_modules\\*",
+    "*\\bin\\Debug\\*",
+    "*\\bin\\Release\\*",
+    "*\\obj\\*"
+  ],
+  "_ExcludePatterns_help": "File/directory patterns to exclude from processing. Uses PowerShell wildcards.",
+  
+  "LinkPreferences": {
+    "Directory": "Junction",
+    "File": "HardLink", 
+    "CrossVolume": "SymbolicLink"
+  },
+  "_LinkPreferences_help": "Preferred link types for different scenarios when LinkType is Auto.",
+  
+  "BackupEnabled": true,
+  "_BackupEnabled_help": "Whether to create backup records in database before operations. Enables rollback functionality.",
+  
+  "MaxOperationsPerBatch": 1000,
+  "_MaxOperationsPerBatch_help": "Maximum number of operations to process in a single batch to manage memory usage.",
+  
+  "AdvancedSettings": {
+    "UseTransactions": true,
+    "_UseTransactions_help": "Use database transactions for atomic operations. Recommended for data integrity.",
+    
+    "ValidateLinksAfterCreation": true,
+    "_ValidateLinksAfterCreation_help": "Verify that created links are functional before marking operation as successful.",
+    
+    "CleanupOrphanedLinks": false,
+    "_CleanupOrphanedLinks_help": "Automatically remove links that point to non-existent targets during operations.",
+    
+    "ProgressUpdateInterval": 100,
+    "_ProgressUpdateInterval_help": "Update progress display every N operations during batch processing.",
+    
+    "MaxRetryAttempts": 3,
+    "_MaxRetryAttempts_help": "Number of times to retry failed operations before giving up.",
+    
+    "RetryDelaySeconds": 1,
+    "_RetryDelaySeconds_help": "Seconds to wait between retry attempts for failed operations."
+  },
+  
+  "SecuritySettings": {
+    "RequireElevation": false,
+    "_RequireElevation_help": "Require administrator privileges to run the script. Some link types may need elevation.",
+    
+    "AllowCrossVolumeLinks": true,
+    "_AllowCrossVolumeLinks_help": "Allow creation of links that cross volume boundaries. May have performance implications.",
+    
+    "ValidateTargetAccessibility": true,
+    "_ValidateTargetAccessibility_help": "Verify that target directories are accessible before creating links."
+  },
+  
+  "PerformanceSettings": {
+    "UseParallelProcessing": false,
+    "_UseParallelProcessing_help": "Use multiple threads for path scanning. May improve performance on large directories.",
+    
+    "MaxParallelJobs": 4,
+    "_MaxParallelJobs_help": "Maximum number of parallel jobs when UseParallelProcessing is enabled.",
+    
+    "CachePathAnalysis": true,
+    "_CachePathAnalysis_help": "Cache path analysis results to avoid re-scanning unchanged directories.",
+    
+    "CacheExpirationHours": 24,
+    "_CacheExpirationHours_help": "Hours after which cached analysis results expire and require re-scanning."
+  },
+  
+  "NotificationSettings": {
+    "ShowProgressBar": true,
+    "_ShowProgressBar_help": "Display progress bars during long-running operations.",
+    
+    "VerboseOutput": false,
+    "_VerboseOutput_help": "Show detailed output for each operation. Useful for troubleshooting.",
+    
+    "SummaryReport": true,
+    "_SummaryReport_help": "Display summary report after operations complete.",
+    
+    "ErrorNotificationLevel": "Warning",
+    "_ErrorNotificationLevel_help": "Minimum error level to display notifications: Debug, Info, Warning, Error."
+  }
+}

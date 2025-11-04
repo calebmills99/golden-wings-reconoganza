@@ -1,0 +1,16 @@
+[model]
+model = "string"
+model_reasoning_effort = "string"
+
+[projects.*]
+trust_level = "string"
+
+[mcpServers.*]
+command = "string"
+args = ["string"]
+
+[mcpServers.*.env]
+"*": "string"
+
+[global]
+approval_policy = "string"

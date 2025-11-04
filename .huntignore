@@ -1,0 +1,146 @@
+# Hunt ignore patterns to reduce false positives during content discovery
+# Syntax follows .gitignore-like globbing
+
+# System and OS noise
+$RECYCLE.BIN/
+System Volume Information/
+**/Thumbs.db
+**/desktop.ini
+**/.DS_Store
+**/.Spotlight-V100/
+**/.Trashes/
+**/.fseventsd/
+
+# Browser data and caches
+**/AppData/Local/Google/Chrome/**
+**/AppData/Local/Microsoft/Edge/**
+**/AppData/Local/Mozilla/Firefox/**
+**/Library/Application Support/Google/Chrome/**
+**/Library/Application Support/Firefox/**
+**/Caches/**
+
+# Package managers and build artifacts
+**/node_modules/**
+**/dist/**
+**/build/**
+**/.next/**
+**/.nuxt/**
+**/.venv/**
+**/venv/**
+**/__pycache__/**
+**/.pytest_cache/**
+**/.parcel-cache/**
+**/.cache/**
+
+# Security / hacking tools and wordlists
+**/rockyou.txt*
+**/wordlists/**
+**/hydra/**
+**/john/**
+**/metasploit/**
+**/nmap/**
+
+# Legal boilerplate and licenses (generally not project content)
+**/LICENSE
+**/LICENSE.*
+**/COPYING
+**/COPYRIGHT
+**/EULA*
+**/TERMS*
+**/PRIVACY*
+
+# Generic business/customer databases and exports
+**/*.sqlite
+**/*.sqlite3
+**/*.mdb
+**/*.accdb
+**/*.db
+**/*.db3
+**/*.bak
+**/*.tmp
+**/*.log
+
+# Development noise
+**/.git/**
+**/.github/**
+**/.idea/**
+**/.vscode/**
+**/*.iml
+
+# Office templates and duplicates
+**/~$*.doc*
+**/~$*.xls*
+**/~$*.ppt*
+
+# Media caches and raw camera dumps (typically not text sources)
+**/Adobe/**
+**/Lightroom/**
+**/Final Cut Pro/**
+**/Premiere Pro/**
+**/Camera Roll/**
+
+# Archive formats (skip unless explicitly requested)
+**/*.zip
+**/*.rar
+**/*.7z
+**/*.tar
+**/*.tar.gz
+**/*.tgz
+
+# Temporary files
+**/*~
+**/*.swp
+**/*.swo
+**/#*#
+
+# --- Project-specific noise reductions (added after first full run) ---
+# Android/app resource dumps and Windows app package resources
+**/gdrive/res/**
+**/Junk/Zombies/**
+**/Microsoft.YourPhone_*/**
+
+# Electron build artifacts (already partially ignored, but add explicit paths seen)
+**/sigma-file-manager/dist_electron/**
+**/sigma-file-manager/win-unpacked/**
+
+
+# --- Project-specific exclusions (from TOP100.md review on 2025-11-03) ---
+# Windows recovery-related and system recovery artifacts
+**/*Recovery Key*.txt
+**/Recovery*.txt
+**/ReAgent*.xml
+C:\runb\**
+**/diskprep.txt
+
+# Tool-generated analysis exports
+**/file_type_analysis_*.csv
+
+# Financial/contacts CSVs (PII)
+**/CPA_*.csv
+**/GW_Contacts_General_*.csv
+
+# Premiere project files (metadata-heavy, not primary narrative sources)
+**/*.prproj
+**/*.prproj.xml
+
+
+# --- Repository planning and meta documents (exclude from content ranking) ---
+# Added based on TOP100 findings and user request on 2025-11-03
+**/AGENTS.md
+**/DEVELOPMENT.md
+**/GOLDEN_WINGS_*_PLAN.md
+**/*ORGANIZATION_SUMMARY.md
+**/MEDIA_ORGANIZATION_SUMMARY.md
+**/COMPLETE_MEDIA_ORGANIZATION_SUMMARY.md
+**/CLAUDE*.md
+**/PHASE_*.md
+**/README_Step_*.md
+**/NAMING_LESSONS_LEARNED.md
+**/JOB_SEARCH_IMPROVEMENTS.md
+
+# Additional residual noise from prior review (utility/system outputs)
+C:\run\**/*.html
+C:\run\guardr\**/*.html
+C:\Drivers\DiskScanReports\*.csv
+G:\AdobeStock_*\**
+G:\casper\**

@@ -1,67 +1,40 @@
-# PowerShell scripts to ignore
-dumb.ps1
+# Secrets and local environment
+.env
+.env.*
 
-# Contact sheets folder
-contact_sheets/
-
-# Operating System files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Editor files
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# Temporary files
-*.tmp
-*.temp
-.cache/
-temp/
-tmp/
-
-# Logs
-*.log
-logs/
-
-# Runtime files
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage and testing
-coverage/
-.nyc_output/
-.coverage
-.pytest_cache/
-
-# Dependencies (common patterns)
-node_modules/
-.npm
-.pnpm-debug.log*
+# Python
 __pycache__/
 *.py[cod]
-*$py.class
-.Python
-env/
+*.pyo
+*.pyd
+.pytest_cache/
+.venv/
 venv/
-ENV/
-env.bak/
-venv.bak/
 
-# Build outputs
-dist/
-build/
-*.egg-info/
-.tox/
+# Node
+node_modules/
+# Keep lockfiles tracked (do not ignore package-lock.json/yarn.lock)
 
-# IDE specific
-.cursor/
-cursor.log
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Tool databases and logs
+windows-path-shortener/PathShortener.db
+windows-path-shortener/logs/
+*.log
+
+# Generated reports/artifacts (regenerate via scripts)
+content-inventory.csv
+golden-wings-content-*.json
+content_classification_results_*
+TOP*.md
+CONTENT-*.md
+CONTROL*.md
+control*.json
+
+top*_*.json
+
+# Misc caches
+.cache/
+.parcel-cache/

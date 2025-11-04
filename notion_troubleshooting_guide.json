@@ -1,0 +1,295 @@
+{
+  "title": "Golden Wings Notion Integration - Troubleshooting Guide",
+  "version": "1.0.0",
+  "status": "database_compatibility_issue",
+  "description": "Troubleshooting guide for Notion database multiple data sources error",
+  "current_situation": {
+    "problem": "Database has multiple data sources (synced/linked databases)",
+    "error_code": "multiple_data_sources_for_database",
+    "error_message": "Databases with multiple data sources are not supported in this API version",
+    "required_api_version": "2025-09-03",
+    "database_id": "PLACEHOLDER_DATABASE_ID",
+    "database_url": "https://notion.so/PLACEHOLDER_DATABASE_ID",
+    "api_connection": "working",
+    "token_format": "<REDACTED_TOKEN_FORMAT>",
+    "token_status": "unknown"
+  },
+  "diagnosis": {
+    "root_cause": "Database contains multiple data sources",
+    "possible_causes": [
+      "Database is synced with another database",
+      "Database is linked to multiple sources",
+      "Database has advanced configuration creating multiple data streams",
+      "Database was created with complex data relationships"
+    ],
+    "affected_components": [
+      "Database structure validation",
+      "API compatibility check",
+      "Data source enumeration"
+    ]
+  },
+  "solutions": {
+    "primary_solution": {
+      "title": "Create New Simple Database",
+      "description": "Create a new database without sync/linked sources",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Open Notion",
+          "details": "Navigate to your Notion workspace"
+        },
+        {
+          "step": 2,
+          "action": "Create New Database",
+          "details": "Click '+ New' → Select 'Database' → Choose 'Table' view"
+        },
+        {
+          "step": 3,
+          "action": "Configure Database",
+          "details": {
+            "name": "Golden Wings Content Library - Import",
+            "columns": [
+              "File Name (Title)",
+              "Rank (Number)",
+              "Relevance Score (Number)",
+              "File Path (Text)",
+              "Volume (Text)",
+              "File Size (Text)",
+              "Last Modified (Text)",
+              "Extension (Text)",
+              "Keywords (Multi-select)"
+            ]
+          }
+        },
+        {
+          "step": 4,
+          "action": "Get Database ID",
+          "details": "Copy the database ID from the URL (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx format)"
+        },
+        {
+          "step": 5,
+          "action": "Share with Integration",
+          "details": "Click '...' → 'Add connections' → Find 'THE COLLECTIVE' → 'Confirm'"
+        },
+        {
+          "step": 6,
+          "action": "Update Environment",
+          "details": "Update NOTION_DATABASE_ID in .env file with new database ID"
+        }
+      ]
+    },
+    "alternative_solutions": [
+      {
+        "title": "Remove Sync Sources",
+        "description": "Remove sync/linked sources from existing database",
+        "difficulty": "medium",
+        "steps": [
+          "Open current database",
+          "Check for sync icons or linked sources",
+          "Remove all sync connections",
+          "Test database compatibility"
+        ]
+      },
+      {
+        "title": "Copy to New Database",
+        "description": "Copy content from old database to new simple database",
+        "difficulty": "easy",
+        "steps": [
+          "Create new simple database",
+          "Manually copy important content",
+          "Update database ID in configuration",
+          "Test integration"
+        ]
+      }
+    ]
+  },
+  "required_database_schema": {
+    "database_type": "simple_table",
+    "requirements": [
+      "No synced data sources",
+      "No linked database connections",
+      "Single data source only",
+      "Standard table structure"
+    ],
+    "columns": {
+      "required": [
+        {
+          "name": "File Name",
+          "type": "title",
+          "description": "Primary identifier for content files"
+        },
+        {
+          "name": "Rank",
+          "type": "number",
+          "description": "Relevance ranking position (1-50)"
+        },
+        {
+          "name": "Relevance Score",
+          "type": "number",
+          "description": "AI-calculated relevance score"
+        },
+        {
+          "name": "File Path",
+          "type": "rich_text",
+          "description": "Full system path to file"
+        },
+        {
+          "name": "Volume",
+          "type": "rich_text",
+          "description": "Drive/storage location identifier"
+        },
+        {
+          "name": "File Size",
+          "type": "rich_text",
+          "description": "File size in human-readable format"
+        },
+        {
+          "name": "Last Modified",
+          "type": "rich_text",
+          "description": "File modification timestamp"
+        },
+        {
+          "name": "Extension",
+          "type": "rich_text",
+          "description": "File type extension (.txt, .md, .mp4, etc.)"
+        },
+        {
+          "name": "Keywords",
+          "type": "multi_select",
+          "description": "Content tags for filtering and organization"
+        }
+      ],
+      "optional": [
+        {
+          "name": "Status",
+          "type": "select",
+          "description": "Import status tracking (imported, failed, pending)"
+        },
+        {
+          "name": "Import Date",
+          "type": "date",
+          "description": "When the entry was imported"
+        },
+        {
+          "name": "Notes",
+          "type": "rich_text",
+          "description": "Additional notes or comments"
+        }
+      ]
+    }
+  },
+  "testing_commands": {
+    "api_connection_test": {
+      "command": "python -c \"import requests, os; h={'Authorization': f'Bearer {os.getenv('NOTION_SECRET')}', 'Content-Type':'application/json'}; r=requests.get('https://api.notion.com/v1/users', headers=h); print('Status:', r.status_code); print('Response:', r.text[:200])\"",
+      "expected_result": {
+        "status_code": 200,
+        "response_contains": "THE COLLECTIVE"
+      }
+    },
+    "token_format_check": {
+      "command": "python -c \"import os; t=os.getenv('NOTION_SECRET'); print('Format:', t[:10]); print('Length:', len(t)); print('Valid format:', t.startswith('ntn_'))\"",
+      "expected_result": {
+        "format": "ntn_",
+        "length": 50,
+        "valid_format": true
+      }
+    },
+    "full_integration_test": {
+      "command": "python notion_integration.py",
+      "expected_result": {
+        "api_connection": "200 OK",
+        "database_check": "compatible",
+        "entries_imported": 50
+      }
+    }
+  },
+  "environment_configuration": {
+    "current_settings": {
+      "NOTION_SECRET": {
+        "format": "ntn_",
+        "status": "valid",
+        "length": 50,
+        "working": true
+      },
+      "NOTION_DATABASE_ID": {
+        "value": "PLACEHOLDER_DATABASE_ID",
+        "status": "incompatible_multiple_sources"
+      }
+    },
+    "required_updates": {
+      "NOTION_DATABASE_ID": "new_simple_database_id",
+      "database_type": "simple_table_no_sync"
+    }
+  },
+  "expected_workflow": {
+    "after_fix": [
+      "Run: python notion_integration.py",
+      "Expected: API connection successful",
+      "Expected: Database compatibility check passes",
+      "Expected: 50 entries imported successfully",
+      "Expected: All metadata and keywords populated",
+      "Expected: Visual indicators and formatting applied"
+    ]
+  },
+  "error_context": {
+    "error_type": "validation_error",
+    "error_code": "multiple_data_sources_for_database",
+    "http_status": 400,
+    "api_version_requirement": "2025-09-03",
+    "affected_database": {
+      "id": "PLACEHOLDER_DATABASE_ID",
+      "url": "https://notion.so/PLACEHOLDER_DATABASE_ID",
+      "issue": "Contains multiple data sources"
+    }
+  },
+  "next_steps": {
+    "immediate": [
+      "Create new simple database in Notion",
+      "Copy database ID from new database URL",
+      "Update NOTION_DATABASE_ID in .env file",
+      "Share new database with integration",
+      "Run integration test"
+    ],
+    "post_setup": [
+      "Verify all 50 entries imported",
+      "Set up custom views (By Relevance, By File Type, etc.)",
+      "Customize database properties as needed",
+      "Set up automation for future updates"
+    ]
+  },
+  "success_criteria": {
+    "api_connection": "200 OK",
+    "database_compatibility": "passes validation",
+    "entries_imported": "50/50 successful",
+    "data_integrity": "all metadata preserved",
+    "visual_formatting": "score bars and indicators working"
+  },
+  "troubleshooting_tips": {
+    "if_database_still_fails": [
+      "Ensure no sync icons visible in database",
+      "Check for linked database indicators",
+      "Try creating completely new database",
+      "Verify database is in main workspace (not shared)"
+    ],
+    "if_token_issues": [
+      "Confirm token starts with 'ntn_' not 'secret_'",
+      "Check token length (should be 50 characters)",
+      "Verify token hasn't expired",
+      "Regenerate token if issues persist"
+    ],
+    "if_permission_issues": [
+      "Ensure integration has edit permissions",
+      "Check database sharing settings",
+      "Verify integration is confirmed in connections",
+      "Try removing and re-adding integration"
+    ]
+  },
+  "metadata": {
+    "created_for": "Golden Wings Content Hunter",
+    "issue_type": "database_compatibility",
+    "priority": "high",
+    "estimated_resolution_time": "5-10 minutes",
+    "last_updated": "2025-01-09",
+    "version": "1.0.0"
+  }
+}

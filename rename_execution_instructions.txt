@@ -1,0 +1,65 @@
+# Golden Wings Rename Script Usage Instructions
+# Generated: 2025-09-27 10:03:12
+
+## Script Location
+D:\golden-wings-reconoganza\execute_renames_20250927_100312.ps1
+
+## Usage Options
+
+### 1. Preview Mode (Recommended First)
+`powershell
+pwsh -NoProfile -File "D:\golden-wings-reconoganza\execute_renames_20250927_100312.ps1" -WhatIf
+`
+This shows what would be renamed without making any changes.
+
+### 2. Standard Execution with Backup
+`powershell
+pwsh -NoProfile -File "D:\golden-wings-reconoganza\execute_renames_20250927_100312.ps1"
+`
+Renames all files and creates backup copies in a timestamped backup folder.
+
+### 3. Execution without Backup (Use with caution)
+`powershell
+pwsh -NoProfile -File "D:\golden-wings-reconoganza\execute_renames_20250927_100312.ps1" -NoBackup
+`
+Renames files without creating backups. Only use if you have other backups.
+
+### 4. Force Overwrite Existing Files
+`powershell
+pwsh -NoProfile -File "D:\golden-wings-reconoganza\execute_renames_20250927_100312.ps1" -Force
+`
+Overwrites destination files if they already exist.
+
+### 5. Custom Log File
+`powershell
+pwsh -NoProfile -File "D:\golden-wings-reconoganza\execute_renames_20250927_100312.ps1" -LogFile "my_rename_log.txt"
+`
+Saves execution log to a custom file location.
+
+## Safety Features
+
+- **Backup Creation**: Automatic backup of original files (unless -NoBackup)
+- **Collision Detection**: Warns about existing destination files
+- **Directory Creation**: Automatically creates destination directories
+- **Comprehensive Logging**: Detailed log of all operations
+- **Error Recovery**: Continues processing even if individual files fail
+- **What-If Mode**: Preview changes before applying
+
+## File Summary
+- Total mappings loaded: 46
+- Valid files found: 46
+- Missing source files: 0
+
+## Recommended Workflow
+1. Run with -WhatIf first to preview changes
+2. Review the proposed renames carefully
+3. Run without -WhatIf to execute (backup will be created automatically)
+4. Check the execution log for any issues
+5. Verify renamed files are correct
+
+## Rollback Instructions
+If you need to restore original filenames:
+1. Locate the backup folder (backup_YYYYMMDD_HHMMSS)
+2. Copy files from backup folder back to their original locations
+3. Use the execution log to identify which files were renamed
+

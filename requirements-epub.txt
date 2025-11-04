@@ -1,0 +1,4 @@
+# Optional dependencies for EPUB conversion (used by convert_epub.py)
+ebooklib
+beautifulsoup4
+odfpy  # only needed for --odt output

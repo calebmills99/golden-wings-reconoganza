@@ -1,9 +1,20 @@
 {
   "name": "golden-wings-content-hunter",
   "version": "1.0.0",
-  "description": "Find all Golden Wings documentary related files",
+  "description": "Find and rank topic-related documentary files (configurable)",
   "main": "content-hunter.js",
   "scripts": {
-    "hunt": "node content-hunter.js"
+    "hunt": "node simple-content-hunter.js",
+    "hunt:old": "node content-hunter-fixed.js",
+    "hunt:topic": "node content-hunter-fixed.js topic_config.json",
+    "control25": "node content-hunter-fixed.js --control25",
+    "control25:topic": "node content-hunter-fixed.js topic_config.json --control25",
+    "hunt:full": "node simple-content-hunter.js && python notion_integration.py",
+    "notion": "python notion_integration.py",
+    "workflow": "python workflow.py",
+    "full": "python workflow.py",
+    "paths:shorten": "pwsh -File windows-path-shortener/ShortPath.ps1",
+    "epub:txt": "python convert_epub.py --txt",
+    "epub:odt": "python convert_epub.py --odt"
   }
 }
